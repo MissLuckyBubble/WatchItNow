@@ -1,16 +1,19 @@
 package com.example.WatchItNow.models;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 
 @Getter
 @Setter
@@ -21,6 +24,7 @@ public class Movie extends MainModel{
     @Column(nullable = false,length = 255)
     private String title;
     @Column(nullable = false)
+    @JsonFormat(pattern = "dd.MM.yyyy")
     private LocalDate release_date;
     @Column(length = 255)
     private String trailer;
@@ -28,6 +32,11 @@ public class Movie extends MainModel{
     private String description;
     @Column(nullable = false)
     private String poster_url;
-    @Column()
-    private String where_to_watch;
+    @JsonIgnore
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "movie_is_on_platform",
+            joinColumns = @JoinColumn(name = "movie_id"),
+            inverseJoinColumns = @JoinColumn(name = "platform_id")
+    )
+    private Set<Platform> moviePlatforms = new HashSet<>();
 }

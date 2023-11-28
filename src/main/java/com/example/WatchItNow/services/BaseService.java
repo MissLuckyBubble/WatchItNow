@@ -12,43 +12,32 @@ import java.util.stream.Collectors;
 
 @Service
 public abstract class BaseService <U extends MainModel> {
-    protected abstract JpaRepository<U,Long> getRepo();
-    public List<BaseDTO<U>> getAll(){
-        List<U> entities = getRepo().findAll();
-        return entities
-                .stream()
-                .map(this::convert)
-                .collect(Collectors.toList());
-    }
-    public BaseDTO<U> getBy(Long id){
-        Optional<U> entity = getRepo().findById(id);
-        if(entity.isPresent()){
-            return convert(entity.get());
-        }
-        return null;
-    }
-    public BaseDTO<U> create(BaseDTO<U> baseDTO){
-        U entity = convertDTOtoModel(baseDTO);
-        entity.setCreatedAt(LocalDateTime.now());
-        entity.setUpdatedAt(LocalDateTime.now());
-        U savedEntity = getRepo().save(entity);
-        return convert(savedEntity);
-    }
-    protected abstract U convertDTOtoModel(BaseDTO<U> baseDTO);
-    protected abstract BaseDTO<U> convert(U entity);
 
-    public BaseDTO<U> update(BaseDTO<U> baseDTO){
-        long id = baseDTO.getId();
+    protected abstract JpaRepository<U,Long> getRepo();
+
+    public List<U> findAll(){
+      return getRepo().findAll();
+    }
+
+    public Optional<U> getEntity(Long id){
+        return getRepo().findById(id);
+    }
+    public U create(U entity){
+        entity.setCreatedAt(LocalDateTime.now());
+        return getRepo().save(entity);
+    }
+
+    public U update(U entity){
+        long id = entity.getId();
         Optional<U> optionalEntity = getRepo().findById(id);
         if(optionalEntity.isPresent()){
-            U entity = optionalEntity.get();
-            updateEntity(entity ,baseDTO);
-            return convert(getRepo().save(entity));
+            entity.setCreatedAt(optionalEntity.get().getCreatedAt());
+            entity.setUpdatedAt(LocalDateTime.now());
+            return getRepo().save(entity);
         }
         return null;
     }
 
-    protected abstract void updateEntity(U entity, BaseDTO<U> dto);
 
     public boolean remove(long id) {
         Optional<U> optionalEntity = getRepo().findById(id);
