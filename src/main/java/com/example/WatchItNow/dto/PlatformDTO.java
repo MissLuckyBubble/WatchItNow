@@ -1,6 +1,7 @@
 package com.example.WatchItNow.dto;
 
 import com.example.WatchItNow.models.Platform;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,6 +16,7 @@ public class PlatformDTO extends BaseDTO<Platform> {
     private String title;
     private String picture;
     private String link;
+    @JsonIgnoreProperties("moviePlatforms")
     private Set<MovieDTO> movies;
 
     public PlatformDTO(Platform platform){

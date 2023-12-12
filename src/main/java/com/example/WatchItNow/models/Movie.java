@@ -39,4 +39,6 @@ public class Movie extends MainModel{
             inverseJoinColumns = @JoinColumn(name = "platform_id")
     )
     private Set<Platform> moviePlatforms = new HashSet<>();
+    @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Cast> movieCast = new HashSet<>();
 }

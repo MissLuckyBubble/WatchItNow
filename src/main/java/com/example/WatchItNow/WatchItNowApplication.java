@@ -14,6 +14,7 @@ public class WatchItNowApplication {
 
 	@Bean
 	public ModelMapper modelMapper(){
+
 		return new ModelMapper();
 	}
 }

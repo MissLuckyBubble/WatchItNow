@@ -4,13 +4,10 @@ import com.example.WatchItNow.dto.BaseDTO;
 import com.example.WatchItNow.dto.UserDTO;
 import com.example.WatchItNow.models.User;
 import com.example.WatchItNow.services.UserService;
-import jakarta.persistence.Id;
-import jdk.jfr.Category;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.modelmapper.ModelMapper;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,13 +16,13 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/user")
-public class UserRestController {
+public class UserController {
 
     private UserService userService;
     private final ModelMapper modelMapper;
 
     @Autowired
-    private UserRestController(UserService userService, ModelMapper modelMapper) {
+    private UserController(UserService userService, ModelMapper modelMapper) {
         this.userService = userService;
         this.modelMapper = modelMapper;
     }

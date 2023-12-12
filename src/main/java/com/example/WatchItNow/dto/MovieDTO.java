@@ -1,11 +1,10 @@
 package com.example.WatchItNow.dto;
-
 import com.example.WatchItNow.models.Movie;
-import com.example.WatchItNow.models.Platform;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -21,7 +20,9 @@ public class MovieDTO extends BaseDTO<Movie> {
     private String description;
     private String trailer;
     private String poster_url;
-    private Set<Platform> moviePlatforms; // Store only the Platform IDs
+    @JsonIgnoreProperties("movies")
+    private Set<PlatformDTO> moviePlatforms;
+    private Set<CastDTO> movieCast;
 
     public MovieDTO(Movie movie){
         super(movie);
@@ -40,7 +41,12 @@ public class MovieDTO extends BaseDTO<Movie> {
 
         setMoviePlatforms(entity.getMoviePlatforms()
                 .stream()
-                .map(Platform::new)
+                .map(PlatformDTO::new)
+                .collect(Collectors.toSet()));
+
+        setMovieCast(entity.getMovieCast()
+                .stream()
+                .map(CastDTO::new)
                 .collect(Collectors.toSet()));
         return this;
     }

@@ -27,11 +27,4 @@ public class Platform extends MainModel{
     @JsonIgnore
     @ManyToMany(mappedBy = "moviePlatforms")
     private Set<Movie> movies = new HashSet<>();
-
-    public Platform(Platform platform) {
-        this.title = platform.getTitle();
-        this.picture = platform.getPicture();
-        this.link = platform.getLink();
-    }
-
 }
