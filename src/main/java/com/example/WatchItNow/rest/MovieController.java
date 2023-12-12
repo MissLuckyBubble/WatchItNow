@@ -192,12 +192,22 @@ public class MovieController {
         if (movieId != optionalMovie.get().getId()) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(updatedCast);
         }
-        Cast cast = optionalCast.get();
+        Cast cast = convertToCast(updatedCast);
         return ResponseEntity.status(HttpStatus.OK).body(convertToCastDTO(castService.update(cast)));
     }
+    public Cast convertToCast(CastDTO castDTO){
+        Cast cast= new Cast();
+        cast.setMovie(movieService.getEntity(castDTO.getMovie_id()).get());
+        cast.setId(castDTO.getId());
+        cast.setPerson(personService.getEntity(castDTO.getPerson_id()).get());
+        cast.setUpdatedAt(castDTO.getUpdatedAt());
+        cast.setCreatedAt(castDTO.getCreatedAt());
+        cast.setRoleName(castDTO.getRoleName());
 
+        return cast;
+    }
     @DeleteMapping("/{movieId}/cast/{castID}")
-    public ResponseEntity<String> updateCast(@PathVariable long castID) {
+    public ResponseEntity<String> deleteCast(@PathVariable long castID, @PathVariable String movieId) {
         Optional<Cast> optionalCast = castService.getEntity(castID);
 
         if (!optionalCast.isPresent()) {
