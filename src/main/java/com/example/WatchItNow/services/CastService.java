@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class CastService extends  BaseService<Cast> {
     @Autowired
@@ -20,5 +22,8 @@ public class CastService extends  BaseService<Cast> {
 
     public boolean existsByMovieAndPerson(Movie movie, Person person) {
         return castRepo.existsByMovieAndPerson(movie, person);
+    }
+    public List<Cast> findAllByPersonId(Long persoinId){
+        return castRepo.findAllByPersonId(persoinId);
     }
 }

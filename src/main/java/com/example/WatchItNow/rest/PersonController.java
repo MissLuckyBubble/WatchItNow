@@ -1,8 +1,13 @@
 package com.example.WatchItNow.rest;
 
 import com.example.WatchItNow.dto.BaseDTO;
+import com.example.WatchItNow.dto.MovieDTO;
 import com.example.WatchItNow.dto.PersonDTO;
+import com.example.WatchItNow.models.Cast;
+import com.example.WatchItNow.models.Movie;
 import com.example.WatchItNow.models.Person;
+import com.example.WatchItNow.services.CastService;
+import com.example.WatchItNow.services.MovieService;
 import com.example.WatchItNow.services.PersonService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +15,9 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -19,12 +26,16 @@ import java.util.stream.Collectors;
 public class PersonController {
 
     private PersonService personService;
+    private CastService castService;
+    private MovieService movieService;
     private final ModelMapper modelMapper;
 
     @Autowired
-    private PersonController(PersonService personService, ModelMapper modelMapper){
+    private PersonController(PersonService personService, CastService castService, MovieService movieService, ModelMapper modelMapper){
         this.personService = personService;
+        this.movieService = movieService;
         this.modelMapper = modelMapper;
+        this.castService = castService;
     }
 
     @GetMapping()
@@ -47,7 +58,30 @@ public class PersonController {
         return optionalPerson.map(this::convertToPersonDTO).orElse(null);
     }
 
+    @GetMapping("/{personId}/movies")
+    public List<MovieDTO> getMovies(@PathVariable(name = "personId") long personId){
+        Optional<Person> optionalPerson = personService.getEntity(personId);
+        List<MovieDTO> movieDTOS = new ArrayList<>();
+        if(!optionalPerson.isPresent()){
+            return movieDTOS;
+        }
+        List<Cast> casts = castService.findAllByPersonId(personId);
+        movieDTOS = casts.stream()
+                .map(cast -> {
+                    Optional<Movie> optionalMovie = movieService.getEntity(cast.getMovie().getId());
+                    if(optionalMovie.isPresent()){
+                    return convertToMovieDTO(optionalMovie.get());}
+                    else return null;
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        return movieDTOS;
+    }
 
+    private MovieDTO convertToMovieDTO(Movie movie) {
+        final MovieDTO result = modelMapper.map(movie, MovieDTO.class);
+        return result;
+    }
     @PostMapping()
     public BaseDTO<Person> create(@RequestBody PersonDTO newPerson){
         Person person = converPersonDTOtoModel(newPerson);
